@@ -10,7 +10,6 @@
 		<c:set var="title" value="목록조회"/>
 	</c:when>
 </c:choose>
-<c:set var="type" value="Product"/>
 
 <html>
 <head>
@@ -35,7 +34,7 @@
 		}
 	}
 	
-	function fncGet${ type }List(currentPage, p){
+	function fncGetProductList(currentPage, p){
 		p = typeof p != "undefined" ? p : 0;
 		
 		if (p) {
@@ -173,7 +172,7 @@
 						<img src="/images/ct_btnbg01.gif" width="17" height="23">
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top:3px;">
-						<a href="javascript:fncGet${ type }List('1', 1);">검색</a>
+						<a href="javascript:fncGetProductList('1', 1);">검색</a>
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23">
@@ -280,7 +279,7 @@
 		<td align="center">
 			<input type="hidden" id="currentPage" name="currentPage" value=""/>
 			<jsp:include page="../common/pageNavigator.jsp">	
-				<jsp:param name="type" value="${ type }"/>
+				<jsp:param name="type" value="Product"/>
 			</jsp:include>
 		</td>
 	</tr>
