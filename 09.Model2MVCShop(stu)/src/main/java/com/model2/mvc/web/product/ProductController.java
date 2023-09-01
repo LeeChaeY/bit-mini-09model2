@@ -1,5 +1,7 @@
-package com.model2.mvc.web.products;
+package com.model2.mvc.web.product;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,7 +74,7 @@ public class ProductController {
 		if (FileUpload.isMultipartContent(request)) {
 			String temDir2 = "/uploadFiles/";
 			
-			product.setManuDate(product.getManuDate().replace("-", ""));
+//			product.setManuDate(product.getManuDate().replace("-", ""));
 			
 			System.out.println("addProduct : POST : "+product);
 			
@@ -82,13 +85,53 @@ public class ProductController {
 			
 			if(request.getContentLength() < fileUpload.getSizeMax()) {
 				StringTokenizer token = null;
+				
+				List fileItemList = fileUpload.parseRequest(request);
+				int size = fileItemList.size();
+				
+				for (int i=0; i<size; i++) {
+					FileItem fileItem = (FileItem)fileItemList.get(i);
+					
+					if(fileItem.isFormField()) {
+						if(fileItem.getFieldName().equals("manuDate")) {
+							token = new StringTokenizer(fileItem.getString("euc-kr"), "-");
+							String manuDate = token.nextToken() + token.nextToken() + token.nextToken();
+							product.setManuDate(manuDate);
+						} 
+						else if (fileItem.getFieldName().equals("prodName"))
+							product.setProdName(fileItem.getString("euc-kr"));
+						else if (fileItem.getFieldName().equals("prodDetail"))
+							product.setProdDetail(fileItem.getString("euc-kr"));
+						else if (fileItem.getFieldName().equals("price"))
+							product.setPrice(Integer.parseInt(fileItem.getString("euc-kr")));
+					} else {
+						if (fileItem.getSize() > 0) {
+							int idx = fileItem.getName().lastIndexOf("\\");
+							if (idx == -1)
+								idx =  fileItem.getName().lastIndexOf("/");
+							String fileName = fileItem.getName().substring(idx + 1);
+							product.setFileName(fileName);
+							try {
+								File uploadedFile = new File(temDir2, fileName);
+								fileItem.write(uploadedFile);
+							} catch (IOException e) {
+								System.out.println(e);
+							}
+						} else {
+							product.setFileName("../../images/empty.GIF");
+						}
+					}
+				}
+				productService.addProduct(product);
+				model.addAttribute("product", product);
+			} else {
+				int overSize = (request.getContentLength() / 1000000);
+				System.out.println("<scrpt>alert('파일의 크기는 1MB까지 입니다. 올리신 파일 용량은"
+						+ overSize + "MB입니다');");
+				System.out.println("history.back();</script>");
 			}
-			
-			
-			//Business Logic
-			productService.addProduct(product);
-			
-			model.addAttribute("product", product);
+		} else {
+			System.out.println("인코딩 타입이 multipart/form-data가 아닙니다..");
 		}
 		return "forward:/product/addProduct.jsp";
 	}
