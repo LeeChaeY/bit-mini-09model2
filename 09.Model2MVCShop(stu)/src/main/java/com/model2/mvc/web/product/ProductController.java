@@ -73,36 +73,17 @@ public class ProductController {
 		return "redirect:/product/addProductView.jsp";
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="addProduct", method=RequestMethod.POST)
-	public String addProduct( @RequestParam("file") MultipartFile file, @ModelAttribute("product") Product product , Model model, 
-						HttpServletRequest request) throws Exception {
-			System.out.println("addProduct : POST : "+product);	
+	public String addProduct( @ModelAttribute("product") Product product , Model model, HttpServletRequest request, 
+											@RequestParam MultipartHttpServletRequest  multipartFile) throws Exception {
+			product.setManuDate(product.getManuDate().replace("-", ""));
+			System.out.println("addProduct : POST : "+product);
+//			String originalFilename = multipartFile.getOriginalFilename();
+//			System.out.println(originalFilename);
 			
-			if (!file.isEmpty()) {
-	            try {
-	                // 업로드된 파일 저장
-	            	String uploadDir = "C:\\work\\03.git\\bit-mini-09model2\\09.Model2MVCShop(stu)\\src\\main\\\\webapp\\images\\uploadFiles\\";
-//	                String uploadDir = "\\images\\uploadFiles\\"; // 실제 경로로 변경해야 합니다.
-	                File uploadFile = new File(uploadDir, file.getOriginalFilename());
-	                file.transferTo(uploadFile);
-	                
-	                product.setFileName(file.getOriginalFilename());
-	                // 파일 업로드 성공 메시지 등을 처리하거나 다른 작업을 수행합니다.
-	                product.setManuDate(product.getManuDate().replace("-", ""));
-	                
-	                productService.addProduct(product);
-	    			model.addAttribute("product", product);
-	                
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	                // 파일 업로드 실패 처리
-	                System.out.println("<scrpt>alert('파일의 크기는 10MB까지 입니다.");
-	            }
-	        } else {
-	            // 업로드된 파일이 없는 경우 처리
-	        	System.out.println("인코딩 타입이 multipart/form-data가 아닙니다..");
-	        }	
-			
+			productService.addProduct(product);
+			model.addAttribute("product", product);
 		return "forward:/product/addProduct.jsp";
 	}
 	
