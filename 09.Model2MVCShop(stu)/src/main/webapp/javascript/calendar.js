@@ -1,3 +1,4 @@
+		
 		function show_calendar(str_target, str_datetime) 
 		{ 
 

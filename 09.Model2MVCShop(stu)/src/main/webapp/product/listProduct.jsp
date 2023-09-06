@@ -17,10 +17,13 @@
 
 	<link rel="stylesheet" href="/css/admin.css" type="text/css">
 	
+	<!-- CDN(Content Delivery Network) 호스트 사용 -->
+	<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="../javascript/calendar.js">
 	</script>
 
 	<script type="text/javascript">
+	/*
 	window.onload = function() {
 		let td = document.getElementById("tdPrice");
 		let searchKeyword = document.getElementById("searchKeyword");
@@ -100,6 +103,106 @@
 			document.detailForm.submit();
 		}
 	}
+	*/
+	
+	function fncGetProductList(currentPage, p){
+		p = typeof p != "undefined" ? p : 0;
+		
+		if (p) {
+			let op = $("select[name='searchCondition'] option:selected");
+			alert(op);
+			let beginPrice = $("input[name='beginPrice']");
+			let endPrice = $("input[name='endPrice']");
+	
+			if(op == "2") {
+				if (beginPrice.val() == "" || endPrice.val() == "") {
+					alert("금액 범위를 기입해야합니다.");
+					return false;
+				} else if (beginPrice.val() != "" && endPrice.val() != "" && beginPrice.val() > endPrice.val()) {
+					alert("금액 범위가 잘못되었습니다.");
+					return false;
+				}
+			} else if (op == "1") {
+				if ($("input[name='searchKeyword']").val() == "") {
+					alert("키워드를 기입해야합니다.");
+					return false;
+				}
+			} else {
+				alert("검색 분야를 기입해야합니다.");
+				return false;
+			}
+			
+			if (op == "1") {
+				beginPrice.val() = "";
+				endPrice.val() = "";
+				$("input[name='searchKeyword']").val() = $("input[name='searchKeyword']").val();
+			} else if (op == "2") {
+				$("input[name='searchKeyword']").val() = beginPrice.val()+","+endPrice.val();
+			}
+		}
+		
+		$("select[name='orderCondition']").val() = "0";
+		$("input[name='currentPage']").val() = currentPage;
+		$("form").attr("method", "post").attr("action", "/product/listProduct?").submit();
+	}
+	
+	function fncPriceRange() {
+		let op = $("select[name='searchCondition'] option:selected").val();
+		//alert(op);
+		if (op == "2") {
+			$("td.tdPrice").css("display", "");
+			$("input[name'searchKeyword']").css("display", "none");
+		} else if (op == "0" || op == "1") {
+			$("td.tdPrice").css("display", "none");
+			$("input[name'searchKeyword']").css("display", "");
+		}
+	}
+	
+	function fncPriceOrder(currentPage) {
+		let op = $("select[name='searchCondition'] option:selected").val();
+		alert(op);
+		if (op == "1" || op == "2") {
+			$("input[name='currentPage']").val() = currentPage;
+			
+			$("input[name='searchKeyword']").val() = "${search.searchKeyword}";
+			$("select[name='searchCondition']").val() = "${search.searchCondition}";
+			$("input[name='beginPrice']").val() = "${beginPrice}";
+			$("input[name='endPrice']").val() = "${endPrice}";
+			$("form").attr("method", "post").attr("action", "/product/listProduct?").submit();
+		}
+	}
+	
+	$(function() {
+		if ($("select[name='searchCondition']").val() == "2") {
+			$("td.tdPrice").css("display", "");
+			$("input[name'searchKeyword']").css("display", "none");
+		} else if ($("select[name='searchCondition']").val() == "1") {
+			$("td.tdPrice").css("display", "none");
+			$("input[name'searchKeyword']").css("display", "");
+		}
+		
+		
+		$("select[name='searchCondition']").on("click", function () {
+			fncPriceRange();
+		});
+		
+		$(".ct_btn01:contains('검색')").on("click", function () {
+			fncGetProductList('1', 1);
+		});
+		
+		$("select[name='orderCondition']").on("change", function () {
+			fncPriceOrder('1');
+		});
+		
+		$(".productSearch:contains('${ product.prodName }')").on("click", function () {
+			self.location = "/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }";
+		});
+		
+		$(".purchaseBtn:contains('배송하기')").on("click", function () {
+			self.location = "/purchase/updateTranCodeByProd?prodNo=${ product.prodNo }&tranCode=${product.proTranCode }&currentPage=${resultPage.currentPage}";
+		});
+		
+	});
 	
 </script>
 </head>
@@ -107,8 +210,11 @@
 <body bgcolor="#ffffff" text="#000000">
 
 <div style="width:98%; margin-left:10px;">
+<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 <form name="detailForm" action="/product/listProduct?menu=${!empty menu ? menu : ''}" method="post">
-
+////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<form>
+<input type="hidden" name="menu" value="${!empty menu ? menu : ''}">
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
 		<td width="15" height="37">
@@ -132,7 +238,10 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
 		<td align="right">
-			<select id="searchCondition" name="searchCondition" class="ct_input_g" onClick="javascript:fncPriceRange();"  style="width:80px">
+			<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
+			<select name="searchCondition" class="ct_input_g" onClick="javascript:fncPriceRange();"  style="width:80px">
+			////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			<select name="searchCondition" class="ct_input_g" style="width:80px">
 				<option value="0" selected>검색</option>
 				<option value="1" 
 					${!empty search.searchCondition && search.searchCondition.equals("1") ? "selected" : ""}>
@@ -143,12 +252,12 @@
 						상품가격
 				</option>
 			</select>
-			<input id="searchKeyword" type="text" name="searchKeyword" 
+			<input type="text" name="searchKeyword" 
 							value="${!empty search.searchCondition && search.searchCondition.equals('1') ? search.searchKeyword : ''}" 
 							class="ct_input_g" style="width:200px; height:19px" />
 		</td>
 		
-		<td id="tdPrice" align="right" width="400" style="display:none">
+		<td class="tdPrice" align="right" width="400" style="display:none">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="80"><strong> &nbsp금액별 검색 </strong></td>
@@ -172,7 +281,10 @@
 						<img src="/images/ct_btnbg01.gif" width="17" height="23">
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top:3px;">
+						<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 						<a href="javascript:fncGetProductList('1', 1);">검색</a>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						검색
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23">
@@ -182,7 +294,10 @@
 		</td>
 		
 		<td align="right" width="150">
-			<select id="orderCondition" name="orderCondition" class="ct_input_g" style="width:100px" onChange="javascript:fncPriceOrder('1');">
+			<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
+			<select name="orderCondition" class="ct_input_g" style="width:100px" onChange="javascript:fncPriceOrder('1');">
+			////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			<select name="orderCondition" class="ct_input_g" style="width:100px">
 				<option value="0" selected>정렬</option>
 				<option value="1" 
 					${!empty search.orderCondition && search.orderCondition.equals("1") ? "selected" : ""}>
@@ -224,8 +339,11 @@
 		<tr class="ct_list_pop">
 			<td align="center">${ i }</td>
 			<td></td>
-			<td align="left">
+			<td align="left" class="productSearch">
+				<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 				<a href="/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }">${ product.prodName }</a>
+				////////////////////////////////////////////////////////////////////////////////////////////////// -->
+				${ product.prodName }
 			</td>
 			
 			<td></td>
@@ -234,7 +352,7 @@
 			<td align="left">${ product.regDate }</td>
 			<td></td>
 			
-			<td align="left">
+			<td align="left" class="purchaseBtn">
 			<c:choose>
 				<c:when test="${(empty user) || !empty user && !empty user.role && user.role.equals('user') }">
 					${ empty product.proTranCode ? "판매중" : "재고 없음" }
@@ -258,7 +376,10 @@
 						</c:when>
 					</c:choose>
 					<c:if test="${ menu.equals('manage') &&  !empty product.proTranCode && product.proTranCode.equals('2') }">
+						<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 						<a href="/purchase/updateTranCodeByProd?prodNo=${ product.prodNo }&tranCode=${product.proTranCode }&currentPage=${resultPage.currentPage}">배송하기</a>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						배송하기
 					</c:if>
 					<%-- <a href="/purchase/updateTranCodeByProd?prodNo=10001&tranCode=2">배송하기</a>
 					관리자에게만 보이는 것, 상품 관리에는 있음, 상품 검색에는 없음 
@@ -277,7 +398,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
 		<td align="center">
-			<input type="hidden" id="currentPage" name="currentPage" value=""/>
+			<input type="hidden" name="currentPage" value=""/>
 			<jsp:include page="../common/pageNavigator.jsp">	
 				<jsp:param name="type" value="Product"/>
 			</jsp:include>

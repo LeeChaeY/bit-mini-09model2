@@ -7,6 +7,32 @@
 
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
+<!-- CDN(Content Delivery Network) 호스트 사용 -->
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+		
+		//==> 추가된부분 : "수정" "확인"  Event 연결 및 처리
+		 $(function() {
+			$( "td.ct_btn01:contains('확인')" ).on("click" , function() {
+				self.location = "/product/listProduct?menu=manage";
+			});
+			
+			$( "td.ct_btn01:contains('구매')" ).on("click" , function() {
+				if (${user == null}) {
+					alert('로그인을 해주세요.');
+					self.location = "/user/login";
+				} else {
+					self.location = "/purchase/addPurchase?prodNo=${ product.prodNo }";
+				}
+			});
+			 
+			$( "td.ct_btn01:contains('이전')" ).on("click" , function() {
+				history.go(-1);
+			});
+		});
+		
+</script>
+
 <title>상품상세조회</title>
 </head>
 
@@ -117,34 +143,29 @@
 		<table border="0" cellspacing="0" cellpadding="0">
 			<tr>			
 					<c:choose>
-						<c:when test="${ empty user  }">
-							<td width="17" height="23">
-								<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
-							</td>
-							<td background="/images/ct_btnbg02.gif" class="ct_btn01"	style="padding-top: 3px;">
-							<a href="/user/login" onClick="alert('로그인을 해주세요.');">구매</a>
-							</td>
-							<td width="14" height="23">
-								<img src="/images/ct_btnbg03.gif" width="14" height="23">
-							</td>
-						</c:when>
 						<c:when test="${ !empty menu && menu.equals('manage') }">
 							<td width="17" height="23">
 								<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 							</td>
 							<td background="/images/ct_btnbg02.gif" class="ct_btn01"	style="padding-top: 3px;">
-							<a href="/product/listProduct?menu=manage">확인</a>
+								<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
+								<a href="/product/listProduct?menu=manage">확인</a>
+								////////////////////////////////////////////////////////////////////////////////////////////////// -->
+								확인
 							</td>
 							<td width="14" height="23">
 								<img src="/images/ct_btnbg03.gif" width="14" height="23">
 							</td>
 						</c:when>
-						<c:when test="${!empty user && user.role.equals('user') && empty product.proTranCode}">
+						<c:when test="${empty user || !empty user && user.role.equals('user') && empty product.proTranCode}">
 							<td width="17" height="23">
 								<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 							</td>
 							<td background="/images/ct_btnbg02.gif" class="ct_btn01"	style="padding-top: 3px;">
-							<a href="/purchase/addPurchase?prodNo=${ product.prodNo }">구매</a>
+								<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
+								<a href="/purchase/addPurchase?prodNo=${ product.prodNo }">구매</a>  <a href="/user/login" onClick="alert('로그인을 해주세요.');">구매</a>
+								////////////////////////////////////////////////////////////////////////////////////////////////// -->
+								구매
 							</td>
 							<td width="14" height="23">
 								<img src="/images/ct_btnbg03.gif" width="14" height="23">
@@ -157,7 +178,10 @@
 					<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 				</td>
 				<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
-						<a href="javascript:history.go(-1)">이전</a>
+					<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
+					<a href="javascript:history.go(-1)">이전</a>  
+					////////////////////////////////////////////////////////////////////////////////////////////////// -->
+					이전
 				</td>
 				<td width="14" height="23">
 					<img src="/images/ct_btnbg03.gif" width="14" height="23">

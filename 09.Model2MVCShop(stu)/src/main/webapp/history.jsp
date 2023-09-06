@@ -7,7 +7,7 @@
 <title>열어본 상품 보기</title>
 <script type="text/javascript">
 
-function fncDeleteCookieprodNoo) {
+function fncDeleteCookieprodNoo() {
 	request.setCharacterEncoding("euc-kr");
 	response.setCharacterEncoding("euc-kr");
 	String history = null;
@@ -54,11 +54,14 @@ function fncDeleteCookieprodNoo) {
 	if (cookies!=null && cookies.length > 0) {
 		for (int i = 0; i < cookies.length; i++) {
 			Cookie cookie = cookies[i];
+			System.out.println(cookie.getName());
 			if (cookie.getName().equals("history")) {
+				System.out.println("ss");
 				history = cookie.getValue();
 			}
 		}
 		if (history != null) {
+			System.out.println("ss");
 			String[] h = history.split(URLEncoder.encode(","));
 			for (int i = h.length-1; i >= 0; i--) {
 				if (!h[i].equals("null")) {

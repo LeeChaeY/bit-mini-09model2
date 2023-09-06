@@ -81,5 +81,11 @@
 		<property name="defaultErrorView"	value="/common/error.jsp" />
 		
 	</bean>
+	
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <!-- 업로드 파일의 최대 크기 설정 -->
+	    <property name="maxUploadSize" value="10485760" /> <!-- 10MB -->
+	</bean>
 
 </beans>
