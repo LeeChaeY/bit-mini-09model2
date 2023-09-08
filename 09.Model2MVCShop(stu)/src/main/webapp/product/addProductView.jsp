@@ -173,7 +173,7 @@ $(function() {
 		<td class="ct_write01">
 		<!--  <form name='imgForm'>-->
 			<input type="file" id="file" name="file" class="ct_input_g" 
-							style="width: 200px; height: 19px" maxLength="13"/>
+							style="width: 200px; height: 19px" maxLength="13" multiple/>
 							
 			<!--</form>-->
 		</td>

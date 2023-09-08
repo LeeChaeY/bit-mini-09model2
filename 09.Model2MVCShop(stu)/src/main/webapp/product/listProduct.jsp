@@ -349,7 +349,7 @@
 				<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 				<a href="/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }">${ product.prodName }</a>
 				////////////////////////////////////////////////////////////////////////////////////////////////// -->
-				<input style="display: none;" value="${product.prodNo}"/>
+				<input class="productProdNo" style="display: none;" value="${product.prodNo}"/>
 				${ product.prodName }
 			</td>
 			

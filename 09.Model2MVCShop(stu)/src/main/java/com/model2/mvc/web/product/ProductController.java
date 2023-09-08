@@ -74,26 +74,31 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value="addProduct", method=RequestMethod.POST)
-	public String addProduct( @RequestParam("file") MultipartFile file, @ModelAttribute("product") Product product , Model model, 
+	public String addProduct( @RequestParam("file") List<MultipartFile> files, @ModelAttribute("product") Product product , Model model, 
 						HttpServletRequest request) throws Exception {
 			System.out.println("addProduct : POST : "+product);	
 			
-			if (!file.isEmpty()) {
+			String fileNames =  "";
+			if (files.size() != 0) {
 	            try {
 	                // 업로드된 파일 저장
 	            	String uploadDir = "C:\\work\\03.git\\bit-mini-09model2\\09.Model2MVCShop(stu)\\src\\main\\\\webapp\\images\\uploadFiles\\";
 //	                String uploadDir = "\\images\\uploadFiles\\"; // 실제 경로로 변경해야 합니다.
-	                File uploadFile = new File(uploadDir, file.getOriginalFilename());
-	                file.transferTo(uploadFile);
+	            	for (int i=0; i<files.size(); i++) {
+	                File uploadFile = new File(uploadDir, files.get(i).getOriginalFilename());
+	                files.get(i).transferTo(uploadFile);
 	                
-	                product.setFileName(file.getOriginalFilename());
+	                fileNames += files.get(i).getOriginalFilename()+",";
+	            	}
+	            	fileNames = fileNames.substring(0, fileNames.length()-1);
+	            	product.setFileName(fileNames);
 	                // 파일 업로드 성공 메시지 등을 처리하거나 다른 작업을 수행합니다.
 	                product.setManuDate(product.getManuDate().replace("-", ""));
 	                
 	                productService.addProduct(product);
 	    			model.addAttribute("product", product);
 	                
-	            } catch (IOException e) {
+	            } catch (Exception e) {
 	                e.printStackTrace();
 	                // 파일 업로드 실패 처리
 	                System.out.println("<scrpt>alert('파일의 크기는 10MB까지 입니다.");
@@ -232,25 +237,36 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value="updateProduct", method=RequestMethod.POST)
-	public String updateProduct( @RequestParam("file") MultipartFile file, @ModelAttribute("product") Product product) throws Exception{
+	public String updateProduct( @RequestParam("file") List<MultipartFile> files, @ModelAttribute("product") Product product) throws Exception{
 		String menu = "search";
+		String fileNames = "";
 		
 		System.out.println("updateProduct : POST : "+product);
 		
-		if (!file.isEmpty()) {
+		if (files.size() != 0) {
             try {
                 // 업로드된 파일 저장
             	String uploadDir = "C:\\work\\03.git\\bit-mini-09model2\\09.Model2MVCShop(stu)\\src\\main\\\\webapp\\images\\uploadFiles\\";
 //                String uploadDir = "\\images\\uploadFiles\\"; // 실제 경로로 변경해야 합니다.
-                File uploadFile = new File(uploadDir, file.getOriginalFilename());
-                file.transferTo(uploadFile);
                 
-                product.setFileName(file.getOriginalFilename());
-                
-                product.setManuDate(product.getManuDate().replace("-", ""));
-                
-                //Business Logic
-        		productService.updateProduct(product);
+            	fileNames = productService.getProduct(product.getProdNo()).getFileName();
+            	if (fileNames == null) fileNames = "";
+            	
+            	for (int i=0; i<files.size(); i++) {
+	                File uploadFile = new File(uploadDir, files.get(i).getOriginalFilename());
+	                files.get(i).transferTo(uploadFile);
+	                
+	                if (fileNames.equals("")) fileNames += files.get(i).getOriginalFilename()+",";
+	                else fileNames += "," + files.get(i).getOriginalFilename()+",";
+	            	}
+            		
+	            	fileNames = fileNames.substring(0, fileNames.length()-1);
+	            	product.setFileName(fileNames);
+	                // 파일 업로드 성공 메시지 등을 처리하거나 다른 작업을 수행합니다.
+	                product.setManuDate(product.getManuDate().replace("-", ""));
+	                
+	                //	Business Logic
+	        		productService.updateProduct(product);
                 
             } catch (IOException e) {
                 e.printStackTrace();

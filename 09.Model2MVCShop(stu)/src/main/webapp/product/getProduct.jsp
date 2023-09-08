@@ -93,7 +93,10 @@
 		</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
-			<img src="/images/uploadFiles/${ product.fileName }">
+			<c:forEach var="image" items="${ product.fileName.split(',') }">
+				<img src="/images/uploadFiles/${image}">
+			</c:forEach>
+			
 		</td>
 	</tr>
 	<tr>

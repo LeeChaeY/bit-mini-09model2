@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=EUC-KR"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <html>
 <head>
 <title>상품수정</title>
@@ -41,6 +43,8 @@ function fncUpdateProduct(){
 		alert("가격은 반드시 입력하셔야 합니다.");
 		return;
 	}
+	
+	alert($("input[name='file']").val());
 		
 	//document.detailForm.action='/product/updateProduct';
 	//document.detailForm.submit();
@@ -166,8 +170,13 @@ $(function() {
 		<td width="104" class="ct_write">상품이미지</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
+			<c:forEach var="image" items="${ product.fileName.split(',') }">
+				삭제하기
+				<img src="/images/uploadFiles/${image}">
+			</c:forEach>
+			<br>
 			<input	type="file" name="file" class="ct_input_g" 
-						style="width: 200px; height: 19px" maxLength="13" value="${ product.fileName }"/>
+						style="width: 200px; height: 19px" maxLength="13" value="${ product.fileName }" multiple/>
 		</td>
 	</tr>
 	<tr>
