@@ -2,26 +2,69 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<c:set var="type" value="Purchase"/>
-
 <html>
 <head>
 <title>구매 목록조회</title>
 
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
+<!-- CDN(Content Delivery Network) 호스트 사용 -->
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../javascript/calendar.js">
 </script>
 
 <script type="text/javascript">
 	function fncGetPurchaseList(currentPage) {
-		if (document.detailForm.beginDate.value == "" && document.detailForm.endDate.value != "") {
+		//if (document.detailForm.beginDate.value == "" && document.detailForm.endDate.value != "") {
+			//alert("기간별 조회는 시작 날짜를 기입해야합니다.");
+			//return false;
+		//}
+		//document.getElementById("currentPage").value = currentPage;
+		//document.detailForm.submit();
+		
+		if ($("input[name='beginDate']").val() == "" && $("input[name='beginDate']").val() != "") {
 			alert("기간별 조회는 시작 날짜를 기입해야합니다.");
 			return false;
 		}
-		document.getElementById("currentPage").value = currentPage;
-		document.detailForm.submit();
+		
+		$("input[name='currentPage']").val(currentPage);
+		
+		$("form").attr("method", "post").attr("action", "/purchase/listPurchase").submit();
 	}
+	
+	$(function() {
+		$( ".ct_btn01:contains('조회')" ).on("click" , function() {
+			fncGetPurchaseList('1');
+		});
+		
+		$( ".ct_list_pop td:nth-child(3)" ).on("click" , function() {
+			let j = Math.floor($(this).parent().index()/2)-1;
+			let prodNo = $(".purchaseObject").eq(3*j+1).val();
+			self.location = "/product/getProduct?menu=search&prodNo="+prodNo+"";
+		});
+
+		$( ".ct_list_pop td:nth-child(5)" ).on("click" , function() {
+			let j = Math.floor($(this).parent().index()/2)-1;
+			let tranNo = $(".purchaseObject").eq(3*j).val();
+			self.location = "/purchase/getPurchase?tranNo="+tranNo+"";
+		});
+		
+		$( ".ct_list_pop td:nth-child(11)" ).on("click" , function() {
+			let j = Math.floor($(this).parent().index()/2)-1;
+			let tranNo = $(".purchaseObject").eq(3*j).val();
+			let tranCode = $(".purchaseObject").eq(3*j+2).val();
+			self.location = "/purchase/updateTranCode?tranNo="+tranNo+"&tranCode="+tranCode+"&currentPage=${resultPage.currentPage}";
+		});
+
+		$( "img[src='../images/ct_icon_date.gif']" ).on("click" , function() {
+			alert();
+			if ($(this).parent() == $("td.ct_write01").eq(0)) {
+				show_calendar('document.forms[0].beginDate', $("td[name='beginDate']").val());
+			} else if ($(this).parent() == $("td.ct_write01").eq(1)) {
+				show_calendar('document.forms[0].endDate', $("td[name='endDate']").val());
+			}
+		});
+	});
 </script>
 </head>
 
@@ -29,8 +72,10 @@
 
 <div style="width: 98%; margin-left: 10px;">
 
+<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 <form name="detailForm" action="/purchase/listPurchase" method="post">
-
+////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<form>
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
 		<td width="15" height="37"><img src="/images/ct_ttl_img01.gif"width="15" height="37"></td>
@@ -54,15 +99,21 @@
 					<td width="150" class="ct_write01">
 						<input 	type="text" readonly="readonly" name="beginDate" class="ct_input_g" 
 										style="width: 100px; height: 19px" maxLength="20" value="${ !empty beginDate ? beginDate : ''}"/>
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
 									onclick="show_calendar('document.detailForm.beginDate', document.detailForm.beginDate.value)"/>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						&nbsp;<img src="../images/ct_icon_date.gif" width="15" height="15" />
 					</td>
 					<td width="20"><strong> ~ </strong></td>
 					<td width="150" class="ct_write01">
 						<input 	type="text" readonly="readonly" name="endDate" class="ct_input_g" 
 										style="width: 100px; height: 19px;" maxLength="20" value="${ !empty endDate ? endDate : ''}"/>
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
 									onclick="show_calendar('document.detailForm.endDate', document.detailForm.endDate.value)"/>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						&nbsp;<img src="../images/ct_icon_date.gif" width="15" height="15" />
 					</td>
 					<tr>
 			</table>
@@ -75,7 +126,10 @@
 						<img src="/images/ct_btnbg01.gif" width="17" height="23">
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top:3px;">
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<a href="javascript:fncGetPurchaseList('1');">조회</a>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						조회
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23">
@@ -118,12 +172,21 @@
 		</td>
 		<td></td>
 		<td align="left">
+		<input class="purchaseObject" style="display: none;" value="${purchase.tranNo}"/>
+		<input class="purchaseObject" style="display: none;" value="${purchase.purchaseProd.prodNo}"/>
+		<input class="purchaseObject" style="display: none;" value="${purchase.tranCode}"/>
+			<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 			<a href="/purchase/getProduct?menu=search&prodNo=${ purchase.purchaseProd.prodNo }">${ purchase.purchaseProd.prodName }</a>
+			////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			${ purchase.purchaseProd.prodName }
 		</td>
 		<td></td>
 		<td align="left">
 			${ purchase.orderDate }
+			<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 			<a href="/purchase/getPurchase?tranNo=${ purchase.tranNo }" style="margin:30px">구매상세조회</a>
+			////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			구매상세조회
 		</td>
 		<td></td>
 		<td align="left">${ purchase.divyAddr }</td>
@@ -148,7 +211,10 @@
 			<%--배송중 상태면 보임, 사용자가 배송완료되면 누르게끔
 			물건 도착하면 정보수정에 아무것도 없음, 관리자 사용자 모두 배송완료로 바뀜 --%>
 			<c:if test="${ !empty purchase.tranCode && purchase.tranCode.equals('3') }">
+				<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 				<a href="/purchase/updateTranCode?tranNo=${ purchase.tranNo }&tranCode=${ purchase.tranCode }&currentPage=${resultPage.currentPage}">물건도착</a>
+				////////////////////////////////////////////////////////////////////////////////////////////////// -->
+				물건도착
 			</c:if>
 		</td>
 	</tr>
@@ -161,7 +227,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
 	<tr>
 		<td align="center">
-			<input type="hidden" id="currentPage" name="currentPage" value=""/>
+			<input type="hidden" name="currentPage" value=""/>
 			<jsp:include page="../common/pageNavigator.jsp">
 				<jsp:param name="type" value="Purchase"/>
 			</jsp:include>	

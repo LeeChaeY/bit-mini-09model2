@@ -345,11 +345,11 @@
 		<tr class="ct_list_pop">
 			<td align="center">${ i }</td>
 			<td></td>
-			<td align="left" class="productSearch">
+			<td align="left">
 				<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 				<a href="/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }">${ product.prodName }</a>
 				////////////////////////////////////////////////////////////////////////////////////////////////// -->
-				<input class="productProdNo" style="display: none;" value="${product.prodNo}"/>
+				<input style="display: none;" value="${product.prodNo}"/>
 				${ product.prodName }
 			</td>
 			

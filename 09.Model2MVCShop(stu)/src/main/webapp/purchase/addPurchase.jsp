@@ -3,11 +3,32 @@
 <html>
 <head>
 <title>상품 구매 조회</title>
+
+<!-- CDN(Content Delivery Network) 호스트 사용 -->
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	
+	$( "td.ct_btn01:contains('확인')" ).on("click" , function() {
+		 	self.location = "/product/listProduct?menu=manage";
+	});
+	 
+	$( "td.ct_btn01:contains('추가등록')" ).on("click" , function() {
+		 self.location = "/product/addProduct";
+	});
+	 
+});
+</script>
+
 </head>
 
 <body>
 
+<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 <form name="updatePurchase" action="/purchase/updatePurchase" method="post">
+////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<form>
 
 	다음과 같이 구매가 되었습니다.
 	

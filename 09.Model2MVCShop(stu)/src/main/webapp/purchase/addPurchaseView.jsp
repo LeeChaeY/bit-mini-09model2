@@ -7,22 +7,45 @@
 
 <title>상품 구매</title>
 
+<!-- CDN(Content Delivery Network) 호스트 사용 -->
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../javascript/calendar.js">
 </script>
 
 <script type="text/javascript">
 
 function fncAddPurchase() {
-	document.addPurchase.submit();
+	//document.addPurchase.submit();
+	$("form").attr("method" , "POST").attr("action" , "/purchase/addPurchase").submit();
 }
+
+$(function() {
+	$( "td.ct_btn01:contains('구매')" ).on("click" , function() {
+		fncAddPurchase();
+	});
+
+	function resetData(){
+		javascript:history.go(-1);
+	}
+
+	$( "td.ct_btn01:contains('취소')" ).on("click" , function() {
+		resetData();
+	});
+
+	$( "img[src='../images/ct_icon_date.gif']" ).on("click" , function() {
+		show_calendar('document.forms[0].receiverDate', $("td[name=receiverDate]").val());
+	});
+});
 
 </script>
 </head>
 
 <body>
 
+<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 <form name="addPurchase" method="post" action="/purchase/addPurchase">
-
+////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<form>
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
 		<td width="15" height="37">
@@ -183,8 +206,11 @@ function fncAddPurchase() {
 		<td width="200" class="ct_write01">
 			<input 	type="text" readonly="readonly" name="divyDate" class="ct_input_g" 
 							style="width: 100px; height: 19px" maxLength="20"/>
+			<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 			<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
 						onclick="show_calendar('document.addPurchase.receiverDate', document.addPurchase.receiverDate.value)"/>
+			////////////////////////////////////////////////////////////////////////////////////////////////// -->
+			&nbsp;<img src="../images/ct_icon_date.gif" width="15" height="15" />
 		</td>
 	</tr>
 	<tr>
@@ -202,7 +228,10 @@ function fncAddPurchase() {
 						<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<a href="javascript:fncAddPurchase();">구매</a>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						구매
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23"/>
@@ -212,7 +241,10 @@ function fncAddPurchase() {
 						<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<a href="javascript:history.go(-1)">취소</a>
+						////////////////////////////////////////////////////////////////////////////////////////////////// -->
+						취소
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23"/>
