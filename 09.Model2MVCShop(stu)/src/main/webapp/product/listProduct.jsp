@@ -1,7 +1,9 @@
 <%@ page contentType="text/html; charset=euc-kr" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-	
+
+<html>
+
 <c:choose>
 	<c:when test="${ !empty menu && menu.equals('manage') }">
 		<c:set var="title" value="상품 관리"/>
@@ -11,7 +13,6 @@
 	</c:when>
 </c:choose>
 
-<html>
 <head>
 	<title>${ title }</title>
 
@@ -109,8 +110,8 @@
 		p = typeof p != "undefined" ? p : 0;
 		
 		if (p) {
-			let op = $("select[name='searchCondition'] option:selected");
-			alert(op);
+			let op = $("select[name='searchCondition'] option:selected").val();
+			
 			let beginPrice = $("input[name='beginPrice']");
 			let endPrice = $("input[name='endPrice']");
 	
@@ -133,74 +134,79 @@
 			}
 			
 			if (op == "1") {
-				beginPrice.val() = "";
-				endPrice.val() = "";
-				$("input[name='searchKeyword']").val() = $("input[name='searchKeyword']").val();
+				beginPrice.val("");
+				endPrice.val("");
+				$("input[name='searchKeyword']").val($("input[name='searchKeyword']").val());
 			} else if (op == "2") {
-				$("input[name='searchKeyword']").val() = beginPrice.val()+","+endPrice.val();
+				$("input[name='searchKeyword']").val(beginPrice.val()+","+endPrice.val());
 			}
 		}
 		
-		$("select[name='orderCondition']").val() = "0";
-		$("input[name='currentPage']").val() = currentPage;
-		$("form").attr("method", "post").attr("action", "/product/listProduct?").submit();
+		$("select[name='orderCondition']").val("0");
+		$("input[name='currentPage']").val(currentPage);
+		
+		$("form").attr("method", "post").attr("action", "/product/listProduct").submit();
 	}
 	
 	function fncPriceRange() {
 		let op = $("select[name='searchCondition'] option:selected").val();
-		//alert(op);
+		
 		if (op == "2") {
 			$("td.tdPrice").css("display", "");
-			$("input[name'searchKeyword']").css("display", "none");
+			$("input[name='searchKeyword']").css("display", "none");
 		} else if (op == "0" || op == "1") {
 			$("td.tdPrice").css("display", "none");
-			$("input[name'searchKeyword']").css("display", "");
+			$("input[name='searchKeyword']").css("display", "");
 		}
 	}
 	
 	function fncPriceOrder(currentPage) {
-		let op = $("select[name='searchCondition'] option:selected").val();
-		alert(op);
+		let op = $("select[name='orderCondition'] option:selected").val();
+		
 		if (op == "1" || op == "2") {
-			$("input[name='currentPage']").val() = currentPage;
+			$("input[name='currentPage']").val(currentPage);
 			
-			$("input[name='searchKeyword']").val() = "${search.searchKeyword}";
-			$("select[name='searchCondition']").val() = "${search.searchCondition}";
-			$("input[name='beginPrice']").val() = "${beginPrice}";
-			$("input[name='endPrice']").val() = "${endPrice}";
-			$("form").attr("method", "post").attr("action", "/product/listProduct?").submit();
+			$("input[name='searchKeyword']").val("${search.searchKeyword}");
+			$("select[name='searchCondition']").val("${search.searchCondition}");
+			$("input[name='beginPrice']").val("${beginPrice}");
+			$("input[name='endPrice']").val("${endPrice}");
+			$("form").attr("method", "post").attr("action", "/product/listProduct").submit();
 		}
 	}
 	
 	$(function() {
 		if ($("select[name='searchCondition']").val() == "2") {
 			$("td.tdPrice").css("display", "");
-			$("input[name'searchKeyword']").css("display", "none");
+			$("input[name='searchKeyword']").css("display", "none");
 		} else if ($("select[name='searchCondition']").val() == "1") {
 			$("td.tdPrice").css("display", "none");
-			$("input[name'searchKeyword']").css("display", "");
+			$("input[name='searchKeyword']").css("display", "");
 		}
 		
 		
 		$("select[name='searchCondition']").on("click", function () {
 			fncPriceRange();
-		});
+		})
 		
 		$(".ct_btn01:contains('검색')").on("click", function () {
 			fncGetProductList('1', 1);
-		});
+		})
 		
 		$("select[name='orderCondition']").on("change", function () {
 			fncPriceOrder('1');
-		});
+		})
 		
-		$(".productSearch:contains('${ product.prodName }')").on("click", function () {
-			self.location = "/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }";
-		});
+		$(".ct_list_pop td:nth-child(3)").on("click", function () {
+			let j = Math.floor($(this).parent().index()/2)-1;
+			let prodNo = $(".productProdNo").eq(j).val();
+			self.location = "/product/getProduct?prodNo="+prodNo+"&menu=${ menu }";
+		})
 		
-		$(".purchaseBtn:contains('배송하기')").on("click", function () {
-			self.location = "/purchase/updateTranCodeByProd?prodNo=${ product.prodNo }&tranCode=${product.proTranCode }&currentPage=${resultPage.currentPage}";
-		});
+		$("td:contains('배송하기')").on("click", function () {
+			let j = Math.floor($(this).parent().index()/2)-1;
+			let prodNo = $(".productProdNo").eq(j).val();
+			self.location = "/purchase/updateTranCodeByProd?prodNo="+prodNo+"&tranCode=${list.get(i).proTranCode }&currentPage=${resultPage.currentPage}";
+		})
 		
 	});
 	
@@ -343,6 +349,7 @@
 				<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
 				<a href="/product/getProduct?prodNo=${ product.prodNo }&menu=${ menu }">${ product.prodName }</a>
 				////////////////////////////////////////////////////////////////////////////////////////////////// -->
+				<input class="productProdNo" style="display: none;" value="${product.prodNo}"/>
 				${ product.prodName }
 			</td>
 			
@@ -352,7 +359,7 @@
 			<td align="left">${ product.regDate }</td>
 			<td></td>
 			
-			<td align="left" class="purchaseBtn">
+			<td align="left">
 			<c:choose>
 				<c:when test="${(empty user) || !empty user && !empty user.role && user.role.equals('user') }">
 					${ empty product.proTranCode ? "판매중" : "재고 없음" }

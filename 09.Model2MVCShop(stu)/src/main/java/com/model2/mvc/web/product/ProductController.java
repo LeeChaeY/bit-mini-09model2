@@ -66,7 +66,7 @@ public class ProductController {
 	
 	
 	@RequestMapping(value="addProduct", method=RequestMethod.GET )
-	public String addProductView() throws Exception {
+	public String addProduct() throws Exception {
 
 		System.out.println("/product/addProduct : GET");
 		
@@ -220,7 +220,7 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value="updateProduct", method=RequestMethod.GET )
-	public String updateProductView( @RequestParam("prodNo") int prodNo , Model model ) throws Exception{
+	public String updateProduct( @RequestParam("prodNo") int prodNo , Model model ) throws Exception{
 
 		System.out.println("updateProduct : GET : "+prodNo);
 		//Business Logic
@@ -301,12 +301,16 @@ public class ProductController {
 		
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		System.out.println("listProduct ::"+resultPage);
-		
+		search.setSearchKeyword("");
 		// Model °ú View ¿¬°á
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("resultPage", resultPage);
 		model.addAttribute("search", search);
 		model.addAttribute("menu", menu);
+		
+		System.out.println(map.get("list"));
+		System.out.println(search);
+		System.out.println(menu);
 		
 		return "forward:/product/listProduct.jsp";
 	}
