@@ -70,7 +70,7 @@
 		$( function() {
 			//==> 추가된부분 : "addUser"  Event 연결
 			$("img[src='/images/btn_add.gif']").on("click" , function() {
-				self.location = "/user/addUser"
+				self.location = "/user/addUser";
 			});
 		});
 		
